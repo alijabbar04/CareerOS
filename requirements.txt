@@ -1,0 +1,26 @@
+# CareerOS pipeline dependencies for C:\Users\<user>\AppData\Local\Programs\Python\Python313\python.exe
+#
+#   python -m pip install -r requirements.txt
+#
+# Versions pinned to what is currently verified installed on this machine
+# (see AGENTS.md "Tooling on this machine"). Add to this file, do not replace it,
+# when a new module needs something new.
+
+PyYAML==6.0.3
+requests==2.34.2
+openpyxl==3.1.5
+python-docx==1.2.0
+PyMuPDF==1.27.2.3
+rapidfuzz==3.14.5
+
+# T-013 notifications and the Discord approvals bot
+win11toast==0.36.3
+discord.py==2.7.1
+
+# T-016 read-only database browser
+datasette==0.65.5
+
+# T-015/T-020 OS-backed credentials, age encryption and deterministic browser fill
+keyring==25.7.0
+pyrage==1.4.0
+playwright==1.60.0

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14">
+<title>CareerOS</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+  :root {
+    --bg: #0b0f14; --bg-2: #111823; --bg-3: #172130; --line: #223044;
+    --text: #e6edf3; --muted: #93a4b8; --accent: #6ee7b7; --accent-2: #60a5fa; --warn: #fbbf24; --bad: #f87171;
+    --radius: 14px; --gap: 14px; --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.45 var(--font); padding: 16px; padding-bottom: 88px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
+  header h1 { font-size: 20px; margin: 0; letter-spacing: .2px; }
+  header .status { color: var(--muted); font-size: 13px; }
+  .card { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: var(--gap); }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .row:first-of-type { border-top: 0; }
+  .row .title { font-weight: 600; }
+  .row .sub { color: var(--muted); font-size: 13px; }
+  .pill { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--bg-3); color: var(--muted); white-space: nowrap; }
+  .pill.ok { color: var(--accent); } .pill.warn { color: var(--warn); } .pill.bad { color: var(--bad); }
+  nav { position: fixed; left: 0; right: 0; bottom: 0; display: flex; background: var(--bg-2); border-top: 1px solid var(--line); padding: 8px 6px calc(8px + env(safe-area-inset-bottom)); }
+  nav button { flex: 1; background: none; border: 0; color: var(--muted); font: 12px var(--font); padding: 8px 4px; border-radius: 10px; }
+  nav button.active { color: var(--accent); background: var(--bg-3); }
+  .empty { color: var(--muted); padding: 8px 0; }
+  a { color: var(--accent-2); text-decoration: none; }
+</style>
+</head>
+<body>
+<header><h1>CareerOS</h1><span class="status" id="status">connecting</span></header>
+<main id="view"></main>
+<nav>
+  <button data-view="home" class="active">Home</button>
+  <button data-view="review">Review</button>
+  <button data-view="tracker">Tracker</button>
+  <button data-view="board">Board</button>
+</nav>
+<script>
+const $ = (s) => document.querySelector(s);
+const api = (p) => fetch(p).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+const pill = (t, c = "") => `<span class="pill ${c}">${t}</span>`;
+const row = (title, sub, right = "") => `<div class="row"><div><div class="title">${title}</div><div class="sub">${sub}</div></div><div>${right}</div></div>`;
+const views = {
+  async home() {
+    const h = await api("/home");
+    const review = h.to_review.map(a => row(`${a.company}`, a.role, pill(`${a.finals} approved · ${a.drafts} drafts`))).join("") || `<div class="empty">Nothing waiting for review.</div>`;
+    const dl = h.deadlines.map(d => row(d.company, d.role, pill(d.deadline.slice(0, 10), "warn"))).join("") || `<div class="empty">No deadlines recorded.</div>`;
+    return `<section class="card"><h2>To review</h2>${review}</section><section class="card"><h2>Deadlines</h2>${dl}</section>`;
+  },
+  async review() {
+    const apps = await api("/applications");
+    return `<section class="card"><h2>Applications</h2>${apps.map(a => row(a.company, `${a.role} · ${a.status}`, pill(a.deadline ? a.deadline.slice(0, 10) : "no deadline"))).join("")}</section>`;
+  },
+  async tracker() {
+    const t = await api("/tracker/summary");
+    const rows = Object.entries(t.by_status).map(([s, n]) => row(s, "", pill(n))).join("");
+    return `<section class="card"><h2>By stage</h2>${rows}</section><section class="card"><h2>This week</h2>${row("Deadlines within 7 days", "", pill(t.deadlines_7d, t.deadlines_7d ? "warn" : ""))}${row("Assessments due", "", pill(t.assessments_due_7d))}${row("Weekly cap", "", pill(`${t.weekly_cap.used} / ${t.weekly_cap.cap}`))}${row("Source failures", "", pill(t.source_failures, t.source_failures ? "bad" : "ok"))}</section>`;
+  },
+  async board() {
+    const b = await api("/board");
+    const drivers = Object.entries(b.drivers).map(([d, v]) => row(d, v.go.map(t => `${t.id} ${t.title}`).join("; ") || "nothing unblocked")).join("");
+    const ali = b.waiting_on_ali.map(x => row(x, "")).join("") || `<div class="empty">Nothing waiting on you.</div>`;
+    return `<section class="card"><h2>Drivers</h2>${drivers}</section><section class="card"><h2>Waiting on you</h2>${ali}</section>`;
+  },
+};
+async function show(name) {
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.view === name));
+  try { $("#view").innerHTML = await views[name](); } catch (e) { $("#view").innerHTML = `<div class="card empty">Could not load (${e.message}). Is the API running?</div>`; }
+}
+document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => show(b.dataset.view)));
+api("/health").then(h => { $("#status").textContent = h.database ? "connected" : "no database"; }).catch(() => { $("#status").textContent = "offline"; });
+show("home");
+</script>
+</body>
+</html>

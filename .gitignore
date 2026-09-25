@@ -1,0 +1,48 @@
+# secrets and local settings
+.env
+*.env
+settings.yaml
+secrets/
+token*.json
+credentials*.json
+credentials-export*.xlsx
+
+# secrets vault (lives under %LOCALAPPDATA%\CareerOS\vault; brain/vault is the Markdown vault and IS committed),
+# databases, browser profile, exports, logs
+*.age
+vault.json
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+browser-profile/
+exports/
+logs/
+*.log
+
+# original documents stay in the <careers-folder> folder; extracted text is committed
+brain/sources/originals/
+
+# generated graph artefacts (large)
+graphify-out/*.html
+graphify-out/*.svg
+graphify-out/.graphify_python
+graphify-out/.graphify_root
+graphify-out/cache/
+brain/graphify-out/
+
+# language and tool caches
+__pycache__/
+*.pyc
+.venv/
+venv/
+node_modules/
+.pytest_cache/
+.mypy_cache/
+dist/
+build/
+
+# OS and editor
+Thumbs.db
+.DS_Store
+*.swp

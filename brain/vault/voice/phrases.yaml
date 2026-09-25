@@ -1,0 +1,133 @@
+# Phrase lists used by pipeline/style.py. Sources: research/E_writing_quality.md section 2.3
+# (banned and discouraged AI-tell lists), the measured corpus (research/A appendix, appendix A section A8),
+# and the candidate's own edits over time (add to `personal_banned` when the candidate deletes a phrase from a draft).
+
+banned:            # any hit fails the draft
+  - "serves as"
+  - "stands as"
+  - "functions as"
+  - "boasts"
+  - "nestled"
+  - "in the heart of"
+  - "renowned"
+  - "groundbreaking"
+  - "enduring"
+  - "interplay"
+  - "bolstered"
+  - "garner"
+  - "valuable insights"
+  - "fostering"
+  - "highlighting"
+  - "underscoring"
+  - "emphasising"
+  - "emphasizing"
+  - "it is important to note"
+  - "it's important to note"
+  - "in summary"
+  - "profound"
+  - "vital role"
+  - "key role"
+  - "rapidly evolving"
+  - "industry reports"
+  - "experts argue"
+  - "observers have"
+  - "i hope this helps"
+  - tech-savvy            # cover-letter AI tell (T-040, 2026-09-23)
+  - adept            # cover-letter AI tell (T-040, 2026-09-23)
+  - "as an ai"          # chat leftover (T-039 skills audit, 2026-09-23)
+  - delve
+  - tapestry
+  - testament
+  - underscore
+  - underscores
+  - pivotal
+  - realm
+  - landscape          # figurative use
+  - navigate           # figurative use
+  - navigating
+  - foster
+  - "harness the"        # figurative verb only; "regression harness" (the noun) is fine
+  - "harnessing"
+  - "leverage my"        # verb use only; "leverage ratios" (the finance noun) is fine
+  - "leverage the"
+  - "leverage this"
+  - "leverage these"
+  - leveraging
+  - leveraged
+  - robust
+  - vibrant
+  - meticulous
+  - meticulously
+  - showcase
+  - showcasing
+  - intricate
+  - seamless
+  - seamlessly
+  - synergy
+  - holistic
+  - cutting-edge
+  - game-changer
+  - game changer
+  - "in today's fast-paced world"
+  - "i am writing to express my interest"
+  - "i am excited to apply"
+  - "ever-evolving"
+  - "dynamic and innovative"
+  - "passionate about"
+  - thrilled
+  - "unique blend"
+  - "hit the ground running"
+  - "i believe i would be a valuable asset"
+  - "in conclusion"
+  - "unwavering"
+  - "spearhead"
+  - "spearheaded"
+
+discouraged:       # counted per 300 words; more than 3 flags the draft
+  - "crucial"
+  - "enhancing"
+  - "notably"
+  - "comprehensive"
+  - "in today's"
+  - "in order to"       # the candidate writes "to"; two uses in 29,000 words (T-039, 2026-09-23)
+  - "not only"
+  - "but also"
+  - furthermore
+  - moreover
+  - additionally
+  - arguably
+  - "it is worth noting"
+  - importantly
+  - "commitment to excellence"
+  - "align with my values"
+  - "aligns with my values"
+  - fast-paced
+  - dynamic
+  - thrive
+  - thriving
+  - "excited to"
+  - "exciting opportunity"
+  - impactful
+  - utilise
+  - utilize
+  - utilising
+  - utilizing
+  - "proven track record"
+  - "results-driven"
+  - "detail-oriented"
+  - "strategic thinker"
+  - helped             # the candidate (2026-09-23): "supported" instead of "helped" for his own contributions
+  - monitored          # the candidate (2026-09-23): "tracked" (implies analysis and judgement); "monitored" reads weak
+
+personal_banned:   # phrases the candidate has removed from drafts; grows over time
+  - "i am passionate about finance"
+  - "dynamic fast-paced environment"
+
+positive_checklist:
+  - one concrete, ledger-backed detail (number, name, place or date) in every paragraph
+  - sentence lengths that vary; standard deviation at least 40% of the mean
+  - at least one sentence only the candidate could have written
+  - a firm-specific reason tied to a dated source
+  - UK spelling and conventions; "Yours sincerely" to a named contact, "Yours faithfully" otherwise; "Kind regards" in emails
+  - a plain closing with a next step, no summary sentence
+  - within the word limit with at least 5% headroom

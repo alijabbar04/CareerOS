@@ -1,0 +1,244 @@
+{
+  "measured_on": "C:\\Users\\<user>\\Documents\\Projects\\CareerOS\\brain\\sources",
+  "groups": {
+    "answer": {
+      "words": 8737,
+      "sentences": 381,
+      "sentence_len_mean": 22.9,
+      "sentence_len_median": 21,
+      "sentence_len_sd": 14.8,
+      "sentence_len_sd_ratio": 0.65,
+      "sentence_len_min": 5,
+      "sentence_len_max": 219,
+      "paragraphs": 151,
+      "paragraph_len_mean": 56.0,
+      "em_dashes": 4,
+      "en_dashes": 2,
+      "semicolons": 0,
+      "exclamations": 0,
+      "question_marks": 2,
+      "contractions_per_1k": 11.7,
+      "first_person_per_1k": 38.9,
+      "uk_spellings": 65,
+      "us_spellings": 0,
+      "top_openers": [
+        [
+          "i really enjoyed",
+          6
+        ],
+        [
+          "i'm drawn to",
+          4
+        ],
+        [
+          "the combination of",
+          4
+        ],
+        [
+          "as a project",
+          4
+        ],
+        [
+          "alongside this, i",
+          3
+        ],
+        [
+          "through my economics",
+          3
+        ],
+        [
+          "i'm also drawn",
+          3
+        ],
+        [
+          "that interest grew",
+          3
+        ],
+        [
+          "what finalised my",
+          3
+        ],
+        [
+          "on one hand,",
+          3
+        ]
+      ],
+      "documents": 9,
+      "banned_hits": {
+        "navigate": 1,
+        "passionate about": 2
+      },
+      "discouraged_hits": {
+        "in order to": 1,
+        "not only": 1,
+        "but also": 1,
+        "furthermore": 2,
+        "importantly": 2,
+        "fast-paced": 3,
+        "dynamic": 1,
+        "thrive": 2,
+        "detail-oriented": 2,
+        "helped": 4,
+        "monitored": 2
+      },
+      "discouraged_per_300_words": 0.71
+    },
+    "cover-letter": {
+      "words": 14530,
+      "sentences": 606,
+      "sentence_len_mean": 24.1,
+      "sentence_len_median": 22.0,
+      "sentence_len_sd": 13.9,
+      "sentence_len_sd_ratio": 0.58,
+      "sentence_len_min": 4,
+      "sentence_len_max": 199,
+      "paragraphs": 244,
+      "paragraph_len_mean": 36.0,
+      "em_dashes": 0,
+      "en_dashes": 5,
+      "semicolons": 5,
+      "exclamations": 0,
+      "question_marks": 0,
+      "contractions_per_1k": 2.6,
+      "first_person_per_1k": 30.8,
+      "uk_spellings": 162,
+      "us_spellings": 4,
+      "top_openers": [
+        [
+          "i am particularly",
+          29
+        ],
+        [
+          "yours faithfully, ali",
+          22
+        ],
+        [
+          "i bring a",
+          19
+        ],
+        [
+          "i have also",
+          15
+        ],
+        [
+          "in my portfolio",
+          13
+        ],
+        [
+          "i would welcome",
+          11
+        ],
+        [
+          "what stands out",
+          11
+        ],
+        [
+          "i hope my",
+          10
+        ],
+        [
+          "at argos, i",
+          10
+        ],
+        [
+          "the opportunity to",
+          9
+        ]
+      ],
+      "documents": 32,
+      "banned_hits": {
+        "navigate": 1,
+        "robust": 1,
+        "i am writing to express my interest": 2
+      },
+      "discouraged_hits": {
+        "in order to": 1,
+        "not only": 1,
+        "but also": 1,
+        "furthermore": 1,
+        "additionally": 1,
+        "fast-paced": 6,
+        "dynamic": 1,
+        "detail-oriented": 5,
+        "helped": 1,
+        "monitored": 1
+      },
+      "discouraged_per_300_words": 0.39
+    },
+    "email": {
+      "words": 5709,
+      "sentences": 244,
+      "sentence_len_mean": 23.1,
+      "sentence_len_median": 22.0,
+      "sentence_len_sd": 9.5,
+      "sentence_len_sd_ratio": 0.41,
+      "sentence_len_min": 4,
+      "sentence_len_max": 49,
+      "paragraphs": 112,
+      "paragraph_len_mean": 47.0,
+      "em_dashes": 0,
+      "en_dashes": 0,
+      "semicolons": 0,
+      "exclamations": 0,
+      "question_marks": 0,
+      "contractions_per_1k": 6.1,
+      "first_person_per_1k": 44.1,
+      "uk_spellings": 83,
+      "us_spellings": 1,
+      "top_openers": [
+        [
+          "kind regards, ali",
+          18
+        ],
+        [
+          "i have attached",
+          12
+        ],
+        [
+          "having recently completed",
+          9
+        ],
+        [
+          "what particularly attracted",
+          8
+        ],
+        [
+          "thank you for",
+          8
+        ],
+        [
+          "i was also",
+          7
+        ],
+        [
+          "i found i",
+          6
+        ],
+        [
+          "i can be",
+          6
+        ],
+        [
+          "i recently completed",
+          5
+        ],
+        [
+          "thank you very",
+          5
+        ]
+      ],
+      "documents": 18,
+      "banned_hits": {
+        "navigate": 2,
+        "i am writing to express my interest": 2
+      },
+      "discouraged_hits": {
+        "not only": 1,
+        "but also": 1,
+        "fast-paced": 3,
+        "helped": 9
+      },
+      "discouraged_per_300_words": 0.73
+    }
+  }
+}

@@ -1,0 +1,101 @@
+# CareerOS settings — copy to settings.yaml (settings.yaml is git-ignored because it may name accounts and channels)
+# Every value here can be changed while the system is running; the next action reads the new value.
+
+driver: claude            # claude | codex | split   (split assigns tasks by the favoured-model tags in TASKS.md)
+codex_role: reviewer      # reviewer | driver | off  (with driver: codex, Claude becomes the reviewer)
+
+autonomy:
+  level: 1                # 0 observe · 1 draft and fill, stop before Submit · 2 submit · 3 autonomous (see plan/PLAN.md section 5)
+  overrides:              # auto | ask | never — an override beats the level
+    submit_applications: ask
+    create_accounts: ask
+    fill_identity_fields: auto      # deterministic vault helper; the model never sees the values
+    tick_declarations: ask
+    send_emails: never
+    linkedin_messages: never
+    linkedin_easy_apply: never
+    diversity_monitoring: never     # "prefer not to say" unless you set values in the vault
+    salary_expectations: ask
+    referees: ask
+    notice_period: auto             # from the vault
+  recall_window_minutes: 15         # a submission can be cancelled from the phone within this window
+  accept_linkedin_account_risk: false   # must be true before any LinkedIn action beyond reading
+
+caps:
+  weekly_applications: 25
+  daily_linkedin_actions: 10
+  daily_emails: 10
+  per_employer_per_cycle: 1
+  cycle_start: 2026-09-01
+
+tracks:                   # ordered by priority; the scorer weights postings by track
+  - 1-aca-acca-training-contracts
+  - 8-public-finance
+  - 6-industry-and-insurer-finance
+  - 7-fintech-ops-and-analyst
+  - 9-product-engineering-ai-assisted
+  - 5-bank-ops-and-risk
+  - 3-wealth-and-asset-management
+  - 2-economic-consulting
+
+scoring:
+  candidate_graduation_year: 2025   # confirmed claim C-0020; used only for explicit class-year exclusions
+  salary_floor_gbp: null            # null = do not infer a minimum salary preference
+  requires_sponsorship: null        # null = do not infer immigration status or filter on sponsorship
+  shortlist_threshold: 60
+  shortlist_limit: 25
+
+employer_ai_policy:
+  default_mode: drafting_assisted   # drafting_assisted (system drafts, the candidate edits) | proofread_only (the candidate writes, system researches and polishes) | outline_only (system supplies facts, story, firm research and structure; the candidate writes every sentence)
+  mode_overrides:                   # per employer; extend as policies are found; Greenhouse ai_disclaimer fields are captured automatically
+    BDO: outline_only
+    "FTI Consulting": outline_only
+  ai_declaration:                   # picked automatically from the mode logged for that application; never composed by the model
+    drafting_assisted: "I used AI tools to organise my experience, research the firm and its recent developments, find the right sources to learn more, and improve phrasing. Every fact and example is my own and true, and I reviewed and edited the final text before submitting it."
+    proofread_only: "I used AI tools to organise my experience, research the firm and its recent developments, and find the right sources to learn more, with brief help on phrasing. Every fact and example is my own and true, and the text is my own."
+    outline_only: "I used AI tools to organise my experience and to research the firm and its recent developments. Every fact and example is my own and true, and I wrote the text myself."
+    no_ai_used_boxes: never         # a tick-box asserting that no AI was used is never ticked by the system; those employers go to proofread_only mode or the candidate writes by hand
+
+vault:
+  location: "%USERPROFILE%/CareerOS-data/vault"
+  password_policy: unique           # unique | single   (single = one strong password on every portal; riskier)
+  applications_email: ""            # the dedicated Gmail for portal accounts and outbound email, once created
+  export_on_demand_only: true
+  autofill_domains_allowlist: []     # employer tenant hosts, e.g. ["pwc.wd3.myworkdayjobs.com"]; a platform root such as "myworkdayjobs.com" also matches every tenant, including fake-employer ones; empty = ask before first fill on a new domain
+
+browser:
+  profile: "%USERPROFILE%/CareerOS-data/browser-profile"
+  linkedin_via: own-chrome-readonly  # own-chrome-readonly | dedicated-profile
+  human_pace:
+    min_delay_seconds: 4
+    max_delay_seconds: 25
+    max_tabs: 1
+  captcha: park-and-continue         # the only option; models will not solve CAPTCHAs
+
+providers:
+  claude: { via: subscription, config_dirs: [] }        # config_dirs from the AI Account Manager, in rotation order (the candidate to fill)
+  codex:  { via: subscription }
+  ollama: { models: [qwen3:8b], use_for: [posting_triage, email_triage] }
+  openrouter: { enabled: false, models: [], use_for: [posting_triage], never_send: [personal_data] }
+
+notifications:
+  laptop_toast: true
+  discord:
+    webhook_env: DISCORD_WEBHOOK_URL       # set in .env (never committed)
+    bot_token_env: DISCORD_BOT_TOKEN       # from C:\Users\<user>\claude-discord-bot\.env, copied into this project's .env
+    channels: { digest: "#digest", actions: "#actions", approvals: "#approvals" }
+  claude_mobile_push: true                  # via Remote Control; enable in /config
+  telegram: { enabled: false }
+  daily_digest_time: "07:45"
+  weekly_review: "Sunday 18:00"
+
+inbox:
+  read_account: candidate@example.com     # personal inbox for now
+  poll_minutes: 3
+  urgency_default_hours: 48
+  include_folders: [INBOX, SPAM, CATEGORY_PROMOTIONS]
+
+schedule:
+  scan_jobs: "30 7 * * 1-5"
+  inbox_check: "0 8-22/2 * * *"
+  weekly_review: "0 18 * * 0"

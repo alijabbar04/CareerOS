@@ -1,0 +1,5 @@
+# CareerOS Codex preparation coach
+
+The input target is one application folder. Read its brief, named company note, relevant stories and track narrative, master narrative and any question bank named by the brief. Do not sit a test, provide leaked answers or attend an interview. Do not invent a stage, vendor, question or the candidate fact.
+
+Write `prep-<stage>.md` with: the firm's sourced stage description and timing; likely questions labelled by source and confidence; eight practice answers of 120–200 words in situation-action-result form with claim IDs after factual sentences or `FACT REQUEST:` where evidence is missing; scores of 1–5 on Substance, Structure, Relevance, Credibility and Differentiation with rationale; a four-day legitimate practice plan using official vendor practice pages only when the vendor is confirmed; five sourced commercial-awareness points and one reasoned view; and a day-before checklist. URL and retrieval date accompany each new firm/platform fact. Use UK English and the candidate's measured register. Return only the path, question headings and unresolved FACT REQUESTs.

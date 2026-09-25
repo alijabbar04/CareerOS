@@ -1,0 +1,247 @@
+openapi: 3.1.0
+info:
+  title: CareerOS companion API
+  version: 0.1.0
+  description: >
+    Local API for the CareerOS companion app (docs/COMPANION-APP.md). Runs on the laptop at
+    127.0.0.1:8765 and is reached from the phone over Tailscale. Read-mostly over the tracker
+    database and the application folders; every write calls an existing pipeline function so
+    settings.yaml, hooks and the event log apply. Never exposes the vault, .env, the ledger's
+    never-use claims, or raw source documents. Every POST needs the header
+    `X-CareerOS-Client: companion` and, when an Origin is sent, one matching the host called;
+    otherwise 403 (so a web page the candidate visits cannot post to the local API). Every write is logged
+    in `events` with source `ali-companion`.
+servers:
+  - url: http://127.0.0.1:8765
+paths:
+  /health:
+    get:
+      summary: Liveness, database path presence and version
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  version: { type: string }
+                  database: { type: boolean, description: the live database exists and opens }
+  /home:
+    get:
+      summary: What needs the candidate today
+      responses:
+        "200":
+          description: drafts to review, deadlines within 7 days, assessments due, parked submissions, unread notifications
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Home" }
+  /applications:
+    get:
+      summary: Applications with stage, deadline and draft counts
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string }
+          description: filter by tracker status
+      responses:
+        "200":
+          description: list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Application" }
+  /applications/{id}:
+    get:
+      summary: One application with its drafts, finals, reports and fact requests
+      parameters: [{ in: path, name: id, required: true, schema: { type: integer } }]
+      responses:
+        "200":
+          description: detail
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApplicationDetail" }
+        "404": { description: unknown application }
+  /applications/{id}/drafts/{stem}:
+    get:
+      summary: One draft's prose (citation mapping stripped), its front matter and its latest reports
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: integer } }
+        - { in: path, name: stem, required: true, schema: { type: string }, description: e.g. answer-1-r2 }
+      responses:
+        "200":
+          description: draft
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Draft" }
+  /applications/{id}/drafts/{stem}/approve:
+    post:
+      summary: Approve a draft into final/ (same as the /review skill), then publish
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: integer } }
+        - { in: path, name: stem, required: true, schema: { type: string } }
+      responses:
+        "200": { description: approved; returns the published paths }
+        "409": { description: the latest deterministic report has hard failures }
+  /applications/{id}/drafts/{stem}/edit:
+    post:
+      summary: Replace the prose with the candidate's edited text, re-verify, record the edit distance and classify the edit
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: integer } }
+        - { in: path, name: stem, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text: { type: string }
+                note: { type: string, description: optional reason, stored with the edit }
+      responses:
+        "200": { description: new round written and verified; returns the verify result }
+  /applications/{id}/drafts/{stem}/reject:
+    post:
+      summary: Reject a draft with a reason; the application stays ready-for-review for a redraft
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: integer } }
+        - { in: path, name: stem, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { reason: { type: string } } }
+      responses:
+        "200": { description: recorded }
+  /applications/{id}/publish:
+    post:
+      summary: Re-run pipeline.publish for this application (Documents mirror and OneDrive)
+      parameters: [{ in: path, name: id, required: true, schema: { type: integer } }]
+      responses:
+        "200": { description: paths written }
+  /shortlist/latest:
+    get:
+      summary: The newest data/shortlist-<date>.md as structured rows, with whether an application already exists
+      responses:
+        "200":
+          description: rows
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ShortlistRow" }
+  /shortlist/{posting_id}/approve:
+    post:
+      summary: Create the application and brief for a posting (pipeline.drafts init); the one-per-employer guard applies
+      parameters: [{ in: path, name: posting_id, required: true, schema: { type: integer } }]
+      responses:
+        "200": { description: application id and folder }
+        "409": { description: refused by the one-application-per-employer rule }
+  /shortlist/{posting_id}/skip:
+    post:
+      summary: Mark a posting ignored for this cycle
+      parameters: [{ in: path, name: posting_id, required: true, schema: { type: integer } }]
+      responses:
+        "200": { description: recorded }
+  /tracker/summary:
+    get:
+      summary: Counts by stage, deadlines, assessments due, weekly cap usage, source health
+      responses:
+        "200":
+          description: summary
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TrackerSummary" }
+  /assessments:
+    get:
+      summary: Assessments and interviews with deadlines
+      responses:
+        "200": { description: list }
+  /board:
+    get:
+      summary: Driver queues, status files, recent handoffs and what waits on the candidate (pipeline.queue --board as JSON)
+      responses:
+        "200": { description: board }
+  /notifications:
+    get:
+      summary: Recent notification events, newest first
+      parameters: [{ in: query, name: limit, schema: { type: integer, default: 50 } }]
+      responses:
+        "200": { description: list }
+  /push/subscribe:
+    post:
+      summary: Register a Web Push subscription for this device (keys held in the vault, never in the repository)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, description: PushSubscription JSON from the browser }
+      responses:
+        "201": { description: stored }
+components:
+  schemas:
+    Home:
+      type: object
+      properties:
+        to_review: { type: array, items: { $ref: "#/components/schemas/Application" } }
+        deadlines: { type: array, items: { type: object, properties: { application_id: { type: integer }, company: { type: string }, role: { type: string }, deadline: { type: string } } } }
+        assessments_due: { type: array, items: { type: object } }
+        parked: { type: array, items: { type: object }, description: submissions waiting on a CAPTCHA or the candidate }
+        unread_notifications: { type: integer }
+    Application:
+      type: object
+      properties:
+        id: { type: integer }
+        company: { type: string }
+        role: { type: string }
+        track: { type: string }
+        status: { type: string }
+        deadline: { type: string, nullable: true }
+        drafting_mode: { type: string }
+        drafts: { type: integer }
+        finals: { type: integer }
+        fact_requests: { type: integer }
+        folder: { type: string }
+    ApplicationDetail:
+      allOf:
+        - $ref: "#/components/schemas/Application"
+        - type: object
+          properties:
+            brief: { type: object, description: front matter of brief.md }
+            drafts: { type: array, items: { $ref: "#/components/schemas/Draft" } }
+            finals: { type: array, items: { $ref: "#/components/schemas/Draft" } }
+            fact_requests: { type: array, items: { type: string } }
+    Draft:
+      type: object
+      properties:
+        stem: { type: string }
+        kind: { type: string }
+        question: { type: string, nullable: true }
+        round: { type: integer }
+        words: { type: integer }
+        text: { type: string, description: prose only }
+        verify: { type: object, description: hard_fails, warnings, metrics from reports/verify-<stem>.json }
+        verdicts: { type: object, description: verifier, style, red team verdict lines when present }
+        approved: { type: boolean }
+    ShortlistRow:
+      type: object
+      properties:
+        rank: { type: integer }
+        posting_id: { type: integer }
+        company: { type: string }
+        title: { type: string }
+        score: { type: integer }
+        location: { type: string }
+        closes_at: { type: string, nullable: true }
+        url: { type: string }
+        application_id: { type: integer, nullable: true }
+    TrackerSummary:
+      type: object
+      properties:
+        by_status: { type: object, additionalProperties: { type: integer } }
+        deadlines_7d: { type: integer }
+        assessments_due_7d: { type: integer }
+        weekly_cap: { type: object, properties: { used: { type: integer }, cap: { type: integer } } }
+        source_failures: { type: integer }

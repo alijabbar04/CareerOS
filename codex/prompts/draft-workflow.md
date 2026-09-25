@@ -1,0 +1,11 @@
+# CareerOS Codex draft workflow
+
+The input target is `posting:<id>` or an application ID. You are the coordinator, not the writer or verifier. Do not personally draft, ground-check or style-judge application prose; use the separate Codex CLI role wrappers below, which launch fresh sessions. Never submit, fill, send, tick declarations, approve claims or edit LinkedIn. Do not work in a folder containing another driver's uncommitted files. Do not commit or push from this workflow.
+
+1. Initialise with `python -m pipeline.drafts init --posting <id>` or `--application <id>`; never pass `--force` unless the candidate explicitly instructed it. If the one-employer-per-cycle guard refuses, stop. Read the resulting brief path and folder. Check employer AI policy: full prose only in `drafting_assisted`; respect `proofread_only` and `outline_only` exactly.
+2. If the brief lacks a company note, run `scripts/codex-research.ps1` with the company name and rebuild the brief. If the note is present and recent, use it. Do not research a different employer.
+3. Run `codex/invoke-agent.ps1 -Role drafter -Target <application folder> -Round 1`. The child must write drafts and deterministic reports. For each draft path, run `scripts/codex-verify.ps1`, `scripts/codex-style.ps1` and `scripts/codex-red-team.ps1`; these are independent read-only Codex sessions and write their final reports through the CLI output file. Pass only paths, never a writer's reasoning.
+4. If any report fails, launch a fresh drafter with `-Round 2` pointing at the same folder. It reads prior reports and makes minimal repairs. Repeat checkers; one further round (3) is the maximum. Leave any still-failing draft in place and tell the candidate what remains; do not register it or call `ready`.
+5. For each passing latest draft with no deterministic hard failure and no independent FAIL, run `python -m pipeline.drafts register <application id> <draft path> --kind <kind>`. Only when every needed draft passes, run `python -m pipeline.drafts ready <application id>`. No approval or submission follows.
+
+Return paths, word counts, each verdict, FACT REQUESTs, claim IDs awaiting the candidate's approval and the recruiter rubric. Ask for a separate Claude-family review before any employer-facing use. If another driver is already drafting this application, stop without overwriting.
